@@ -182,6 +182,7 @@ RUN set -eux; \
     apk add --no-cache autoconf gcc libc-dev libzip-dev make libpng-dev; \
     pecl install zip; \
     docker-php-ext-install gd pdo_mysql; \
+    docker-php-ext-install -j$(nproc) bcmath; \
 # sodium was built as a shared module (so that it can be replaced later if so desired), so let's enable it too (https://github.com/docker-library/php/issues/598)
     docker-php-ext-enable sodium pdo_mysql zip;
 
