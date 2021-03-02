@@ -22,7 +22,8 @@ RUN set -ex \
 		tar \
 		xz \
 # https://github.com/docker-library/php/issues/494
-		openssl
+		openssl \
+		git
 
 # ensure www-data user exists
 RUN set -eux; \
