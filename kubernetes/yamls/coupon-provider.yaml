@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coupon-provider
+  namespace: mall
+  labels:
+    provider: coupon
+spec:
+  selector:
+    matchLabels:
+      provider: coupon
+  template:
+    metadata:
+      labels:
+        provider: coupon
+    spec:
+      containers:
+        - name: coupon-provider
+          image: 50857500/hyperf-7.4:v1.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - "/bin/bash"
+            - "-c"
+            - "php /hyperf-skeleton/bin/hyperf.php start"
+          ports:
+            - containerPort: 9501
+              protocol: TCP
+            - containerPort: 9502
+              protocol: TCP
+          volumeMounts:
+            - name: project
+              mountPath: /hyperf-skeleton
+      volumes:
+        - name: project
+          hostPath:
+            path: /d/docker/www/coupon-provider
+            type: Directory
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: coupon-provider-service
+  namespace: mall
+spec:
+  selector:
+    provider: coupon
+  type: NodePort
+  ports:
+    - name: index
+      port: 9501
+      targetPort: 9501
+      nodePort: 30951
+      protocol: TCP 
+    - name: coupon-service
+      port: 9502
+      targetPort: 9502
+      nodePort: 30952
+      protocol: TCP

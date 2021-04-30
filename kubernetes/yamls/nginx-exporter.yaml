@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: exporter
+  labels:
+    app: exporter
+spec:
+  containers:
+    - name: exporter
+      image: 50857500/nginx-exporter:v1.0
+      imagePullPolicy: Never
+      ports:
+        - containerPort: 80
+          protocol: TCP
+        - containerPort: 9113
+          protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: exporter-service
+spec:
+  selector:
+    app: exporter
+  type: NodePort
+  ports:
+    - name: nginx
+      port: 80
+      targetPort: 80
+      nodePort: 30180
+    - name: exporter
+      port: 9113
+      targetPort: 9113
+      nodePort: 31193

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: mall
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: app-nginx
+  template:
+    metadata:
+      labels:
+        app: app-nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: code-dir
+              mountPath: /usr/share/nginx/html/
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+      volumes:
+        - name: code-dir
+          hostPath:
+            path: /d/docker/www
+            type: DirectoryOrCreate
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+  namespace: mall
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 32080
+      protocol: TCP
+  selector:
+    app: app-nginx
