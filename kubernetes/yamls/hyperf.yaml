@@ -1,22 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: diankuyun
-  namespace: mall
+  name: hyperf
   labels:
-    deploy: diankuyun
+    deploy: hyperf
 spec:
   selector:
     matchLabels:
-      app: diankuyun
+      app: hyperf
   template:
     metadata:
       labels:
-        app: diankuyun
+        app: hyperf
     spec:
       containers:
-        - name: diankuyun
-          image: 50857500/hyperf-7.4:v1.0
+        - name: hyperf
+          image: hyperf/hyperf:7.4-alpine-v3.12-swoole
           imagePullPolicy: IfNotPresent
           command:
             - "/bin/bash"
@@ -31,7 +30,7 @@ spec:
       volumes:
         - name: project
           hostPath:
-            path: /d/docker/www/diankuyun
+            path: /var/www/hyperf/
             type: Directory
 
 ---
@@ -39,14 +38,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: diankuyun-service
-  namespace: mall
+  name: hyperf-svc
 spec:
   selector:
-    app: diankuyun
+    app: hyperf
   type: NodePort
   ports:
     - port: 9501
       targetPort: 9501
-      nodePort: 31951
+      nodePort: 30951
       protocol: TCP 

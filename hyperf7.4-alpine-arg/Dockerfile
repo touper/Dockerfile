@@ -67,8 +67,9 @@ RUN set -ex \
     && apk del --purge *-dev \
     && rm -rf /var/cache/apk/* /tmp/* /usr/share/man /usr/share/php7 \
     && php -v \
-    && apk add --no-cache libstdc++ openssl git bash \
+    && apk add --no-cache libstdc++ openssl git bash protobuf \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libaio-dev openssl-dev \
+    && apk add --no-cache protobuf \
     && cd /tmp \
     && curl -SL "https://github.com/swoole/swoole-src/archive/${SW_VERSION}.tar.gz" -o swoole.tar.gz \
     && ls -alh \
@@ -93,6 +94,9 @@ RUN set -ex \
     && echo "opcache.enable_cli = 'On'" >> /etc/php7/conf.d/00_opcache.ini \
     && echo "extension=swoole.so" > /etc/php7/conf.d/50_swoole.ini \
     && echo "swoole.use_shortname = 'Off'" >> /etc/php7/conf.d/50_swoole.ini \
+    && cd /tmp \
+    && pecl install protobuf \
+    && echo "extension=protobuf.so" > /etc/php7/conf.d/protobuf.ini \
     && php -m \
     && php --ri swoole \
     # install composer

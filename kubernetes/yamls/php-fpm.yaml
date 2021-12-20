@@ -34,6 +34,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: php-svc
+  label:
+    
 spec:
   type: NodePort
   ports:

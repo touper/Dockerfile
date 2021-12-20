@@ -1,6 +1,6 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
-name: mall
+name: kind
 containerdConfigPatches:
   - |
     [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
@@ -18,13 +18,16 @@ nodes:
       hostPort: 80
       protocol: TCP
     - containerPort: 30060
-      hostPort: 3306
+      hostPort: 33060
       protocol: TCP
     - containerPort: 32200
       hostPort: 9000
       protocol: TCP
+    - containerPort: 16379
+      hostPort: 6379
+      protocol: TCP
     extraMounts:
-    - hostPath: /var/data/
+    - hostPath: /var/www/
       containerPath: /var/www/
   - role: worker
     kubeadmConfigPatches:
@@ -34,7 +37,7 @@ nodes:
         kubeletExtraArgs:
           node-labels: "slave=worker1"
     extraMounts:
-    - hostPath: /var/data/
+    - hostPath: /var/www/
       containerPath: /var/www/
     - hostPath: /var/lib/mysql
       containerPath: /var/lib/mysql
@@ -46,7 +49,7 @@ nodes:
         kubeletExtraArgs:
           node-labels: "slave=worker2"
     extraMounts:
-    - hostPath: /var/data/
+    - hostPath: /var/www/
       containerPath: /var/www/
     - hostPath: /var/lib/mysql
       containerPath: /var/lib/mysql

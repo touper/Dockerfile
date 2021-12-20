@@ -180,7 +180,7 @@ RUN set -eux; \
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
 
 RUN set -eux; \
-    apk add --no-cache autoconf gcc libc-dev libzip-dev make libpng-dev; \
+    apk add --no-cache autoconf gcc libc-dev libzip-dev make libpng-dev ffmpeg; \
     pecl install zip; \
     docker-php-ext-install gd pdo_mysql; \
     docker-php-ext-install -j$(nproc) bcmath; \

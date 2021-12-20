@@ -1,16 +1,32 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-service
-  namespace: mall
+  name: redis-headless-service
 spec:
   ports:
-    - name: redis-port
+    - name: redis-headless-port
       port: 6379
   clusterIP: None
   selector:
     app: redis-app
-    appCluster:  redis-cluster
+    appCluster: redis-cluster
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  selector:
+    app: redis-app
+    appCluster: redis-cluster
+  type: NodePort
+  ports:
+    - port: 6379
+      targetPort: 6379
+      nodePort: 30679
+      protocol: TCP
 
 ---
 
@@ -18,50 +34,68 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis-cluster-app
-  namespace: mall
 spec:
-  serviceName: redis-service
+  serviceName: redis-headless-service
   selector:
     matchLabels:
       app: redis-app
-  replicas: 6
+      appCluster: redis-cluster
+  replicas: 1
   template:
     metadata:
       labels: 
         app: redis-app
         appCluster: redis-cluster
     spec:
-      terminationGracePeriodSeconds: 10
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: app
-                      operator: In
-                      values: 
-                        - redis-app
-                topologyKey: kubernetes.io/hostname
+      # terminationGracePeriodSeconds: 10
       containers:
         - name: redis
           image: redis:latest
           imagePullPolicy: IfNotPresent
+          command: ["/bin/bash","-c","--"]
+          args: ["su redis;chown redis.redis /var/lib/redis;redis-server /usr/local/etc/redis/redis.conf --protected-mode no;"]
+          # command: ["redis-server"]
+          # args: ["/usr/local/etc/redis/redis.conf","--protected-mode","no"]
           ports:
             - name: redis
               containerPort: 6379
               protocol: "TCP"
+            - name: cluster
+              containerPort: 16379
+              protocol: "TCP"
           volumeMounts:
             - name: redis-conf
-              mountPath: /etc/redis
+              mountPath: /usr/local/etc/redis
             - name: redis-data
               mountPath: /var/lib/redis
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: DoesNotExist
+      #   podAntiAffinity:
+      #     preferredDuringSchedulingIgnoredDuringExecution:
+      #     - weight: 60
+      #       podAffinityTerm:
+      #         labelSelector:
+      #           matchExpressions:
+      #           - key: app
+      #             operator: In
+      #             values: 
+      #             - redis-app
+      #         topologyKey: kubernetes.io/hostname
       volumes:
         - name: redis-conf
           configMap:
             name: redis-cluster-config
-        - name: redis-data
-          hostPath: 
-            path: /d/docker/redis/data
-            type: DirectoryOrCreate
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes: [ "ReadWriteMany" ]
+        storageClassName: redis-local-storage
+        resources:
+          requests:
+            storage: 128Mi

@@ -6,9 +6,30 @@ data:
   default.conf: |
     server {
       listen 80;
+      root   /usr/share/nginx/html/qike/public/;
+      server_name admin.qike.la;
+      index  index.php;
+
+      client_max_body_size 200m;
+
+      location / {
+        try_files $uri $uri/ /index.php?$query_string;
+      }
+
+      location ~ \.php$ {
+        fastcgi_pass   10.96.17.118:9000;
+        fastcgi_index  index.php;
+        #这个www目录是php-fpm容器中的www目录
+        fastcgi_param  SCRIPT_FILENAME  /var/www/html/qike/public/$fastcgi_script_name;
+        include        fastcgi_params;
+      }
+    }
+
+    server {
+      listen 80;
       root   /usr/share/nginx/html/admin/public/;
       server_name admin.mall.la;
-      index  index.php
+      index  index.php;
 
       client_max_body_size 20m;
 
@@ -22,7 +43,7 @@ data:
       }
 
       location ~ \.php$ {
-        fastcgi_pass   10.96.248.82:9000;
+        fastcgi_pass   10.96.17.118:9000;
         fastcgi_index  index.php;
         #这个www目录是php-fpm容器中的www目录
         fastcgi_param  SCRIPT_FILENAME  /var/www/html/admin/public/$fastcgi_script_name;
@@ -34,7 +55,7 @@ data:
       listen 80;
       root   /usr/share/nginx/html/tenant/public/;
       server_name tenant.mall.la;
-      index  index.php
+      index  index.php;
       
       client_max_body_size 20m;
 
@@ -48,7 +69,7 @@ data:
       }
 
       location ~ \.php$ {
-        fastcgi_pass   10.96.248.82:9000;
+        fastcgi_pass   10.96.17.118:9000;
         fastcgi_index  index.php;
         #这个www目录是php-fpm容器中的www目录
         fastcgi_param  SCRIPT_FILENAME  /var/www/html/tenant/public/$fastcgi_script_name;
@@ -75,7 +96,7 @@ data:
         }
 
         location ~ \.php$ {
-            fastcgi_pass   10.96.248.82:9000;
+            fastcgi_pass   10.96.17.118:9000;
             fastcgi_index  index.php;
             #这个www目录是php-fpm容器中的www目录
             fastcgi_param  SCRIPT_FILENAME  /var/www/html/mall/public/$fastcgi_script_name;
@@ -102,7 +123,7 @@ data:
         }
 
         location ~ \.php$ {
-            fastcgi_pass   10.96.248.82:9000;
+            fastcgi_pass   10.96.17.118:9000;
             fastcgi_index  index.php;
             #这个www目录是php-fpm容器中的www目录
             fastcgi_param  SCRIPT_FILENAME  /var/www/html/guide/public/$fastcgi_script_name;
