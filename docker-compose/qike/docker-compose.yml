@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "30639:6379"
+    networks:
+      - qike
+
+  php:
+    container_name: php
+    image: 50857500/php:7.4
+    ports:
+      - "9000"
+    volumes:
+      - "/var/www/qike:/var/www/html"
+    networks:
+      - qike
+    depends_on:
+      - db
+      - redis
+
+  db:
+    container_name: mysql
+    image: mysql:5.7.34
+    ports:
+      - "33006:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      default-authentication-plugin: mysql_native_password
+      innodb-use-native-aio: 0
+    volumes:
+      - "/data/qike:/var/lib/mysql"
+      - "/root/docker-compose/mysql:/etc/mysql/conf.d"
+    networks:
+      - qike
+    
+  web:
+    container_name: nginx
+    image: nginx
+    ports:
+     - "80"
+    volumes:
+      - "/root/docker-compose/nginx:/etc/nginx/conf.d"
+      - "/var/www/qike:/usr/share/nginx/html/"
+    networks:
+      - qike
+
+networks:
+  qike:

@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379"
+    networks:
+      - frontend
+
+  hyperf:
+    container_name: php
+    image: 50857500/hyperf:v1.0
+    ports:
+      - "9501-9510"
+    volumes:
+      - "/var/www/hyperf:/hyperf-skeleton"
+    command: ["/bin/bash","-c","php /hyperf-skeleton/bin/hyperf.php start"]
+    stdin_open: true
+    tty: true
+    networks:
+      - frontend
+    depends_on:
+      - db
+      - redis
+
+  db:
+    container_name: mysql
+    image: mysql:5.7.34
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      default-authentication-plugin: mysql_native_password
+      innodb-use-native-aio: 0
+    volumes:
+      - "/data/hyperf:/var/lib/mysql"
+      - "/root/docker-compose/mysql:/etc/mysql/conf.d"
+    networks:
+      - frontend
+
+networks:
+  frontend:

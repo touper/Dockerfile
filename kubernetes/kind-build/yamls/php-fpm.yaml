@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php
+  labels:
+    app: php
+spec:
+  selector:
+    matchLabels:
+      app: app-php
+  template:
+    metadata:
+      labels:
+        app: app-php
+    spec:
+      containers:
+        - name: php
+          image: 50857500/php:7.3.25
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: code-dir
+              mountPath: /var/www/html/
+      volumes:
+        - name: code-dir
+          hostPath:
+            path: /var/www/
+            type: DirectoryOrCreate
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-svc
+  label:
+    
+spec:
+  type: NodePort
+  ports:
+    - name: php
+      port: 9000
+      targetPort: 9000
+      nodePort: 32200
+      protocol: TCP
+  selector:
+    app: app-php

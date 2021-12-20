@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv0
+spec:
+  capacity:
+    storage: 128Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: redis-local-storage
+  nfs:
+    server: 192.168.1.5
+    path: /redis-cluster1
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv1
+spec:
+  capacity:
+    storage: 128Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: redis-local-storage
+  nfs:
+    server: 192.168.1.5
+    path: /redis-cluster2
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv2
+spec:
+  capacity:
+    storage: 128Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: redis-local-storage
+  nfs:
+    server: 192.168.1.5
+    path: /redis-cluster3
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv3
+spec:
+  capacity:
+    storage: 128Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: redis-local-storage
+  nfs:
+    server: 192.168.1.5
+    path: /redis-cluster4
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv4
+spec:
+  capacity:
+    storage: 128Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: redis-local-storage
+  nfs:
+    server: 192.168.1.5
+    path: /redis-cluster5
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv5
+spec:
+  capacity:
+    storage: 128Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: redis-local-storage
+  nfs:
+    server: 192.168.1.5
+    path: /redis-cluster6

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  selector:
+    matchLabels:
+      app: app-mysql
+  template:
+    metadata:
+      labels:
+        app: app-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:5.7.34
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+            - name: mysql-config
+              mountPath: /etc/mysql/conf.d
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root123
+          args:
+            - '--default-authentication-plugin=mysql_native_password'
+            - '--innodb-use-native-aio=0'
+      volumes:
+        - name: mysql-data
+          hostPath:
+            path: /var/lib/mysql
+            type: DirectoryOrCreate
+        - name: mysql-config
+          configMap:
+            name: mysql-config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+      nodePort: 30060
+      protocol: TCP
+  selector:
+    app: app-mysql

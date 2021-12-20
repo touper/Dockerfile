@@ -1,0 +1,16 @@
+{
+    "datacenter": "dc1",
+    "data_dir": "/consul/data",
+    "log_file": "/consul/log",
+    "log_level": "INFO",
+    "node_name": "node1",
+    "client_addr": "0.0.0.0",
+    "server": true,
+    "ui": true,
+    "enable_script_checks": true,
+    "addresses": {
+      "http": "0.0.0.0",
+      "dns": "0.0.0.0"
+    },
+    "encrypt": "YM3GQnG8jUu+CSfihFtRbIRVHvgckWJMCiThnRvRyYE="
+}
